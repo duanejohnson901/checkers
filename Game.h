@@ -15,6 +15,8 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <ctime>
+#include <windows.h>
 
 using namespace std;
 
@@ -51,5 +53,4 @@ namespace GameMode {
         AI_VS_AI
     };
 };
-
 #endif

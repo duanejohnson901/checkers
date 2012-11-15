@@ -2,12 +2,17 @@
 #define HUMAN_H
 
 #include "Player.h"
-#include "IO.h"
 
 class Human : public Player {
 private:
-    //Human player needs access to the IO
-    IO *io;
+    //The selected piece
+    Piece* piece;
+    //The target piece
+    Piece* targetPiece;
+    //The coordinates of the selected piece
+    XY selectedXY;
+    //The coordinates of the target piece
+    XY targetXY;
 public:
     Human(int color, Board* board, IO *io);
     bool play();
@@ -15,6 +20,10 @@ public:
     void chooseTarget();
     XY chooseKillPiece(vector<XY>& killPositions);
     XY chooseKillTarget(vector<XY>& targetPositions);
+
+    int getType() const {
+        return PlayerType::AI;
+    }
 };
 
 

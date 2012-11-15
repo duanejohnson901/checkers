@@ -11,8 +11,8 @@ Game::Game(int mode, int boardSize, int startingPlayerColor) {
 
     switch (this->mode) {
         case GameMode::AI_VS_AI:
-            this->whitePlayer = new AI(PieceColor::WHITE, this->board);
-            this->blackPlayer = new AI(PieceColor::BLACK, this->board);
+            this->whitePlayer = new AI(PieceColor::WHITE, this->board, this->io);
+            this->blackPlayer = new AI(PieceColor::BLACK, this->board, this->io);
             break;
         case GameMode::PLAYER_VS_PLAYER:
             this->whitePlayer = new Human(PieceColor::WHITE, this->board, this->io);
@@ -20,7 +20,7 @@ Game::Game(int mode, int boardSize, int startingPlayerColor) {
             break;
         case GameMode::PLAYER_VS_AI:
             this->whitePlayer = new Human(PieceColor::WHITE, this->board, this->io);
-            this->blackPlayer = new AI(PieceColor::BLACK, this->board);
+            this->blackPlayer = new AI(PieceColor::BLACK, this->board, this->io);
             break;
     }
 }
@@ -108,8 +108,7 @@ void Game::start() {
             board->movePiece(piecePosition, targetPosition);
             played = true;
             playAgain = true;
-        }
-            //The user is playing the second round, but there are no more possible kills (for combo kill), so the turn must end
+        }            //The user is playing the second round, but there are no more possible kills (for combo kill), so the turn must end
         else if (playAgain) {
             played = true;
             playAgain = false;
@@ -122,7 +121,11 @@ void Game::start() {
             this->turn++;
         }
         this->board->promote();
-        this->io->pause();
+        if (player->getType() == PlayerType::AI) {
+            Sleep(10);
+        } else {
+            this->io->pause();
+        }
     }
     this->io->pause();
 }
@@ -161,8 +164,8 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
                 positions.push_back(pos);
             }
         }
-    }        
-    //King
+    }
+        //King
     else {
         int size = board->getSize();
         //The shortest kill will have a movement length of 1

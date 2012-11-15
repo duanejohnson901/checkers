@@ -1,8 +1,7 @@
 #include "Player.h"
 
-Player::Player(int color, Board* board) {
+Player::Player(int color, Board* board, IO* io) {
     this->color = color;
     this->board = board;
-    this->piece = 0;
-    this->targetPiece = 0;
+    this->io = io;
 }

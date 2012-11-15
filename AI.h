@@ -2,16 +2,18 @@
 #define AI_H
 
 #include "Player.h"
-#include "Board.h"
+#include "Random.h"
+#include <algorithm>
+
+using namespace std;
 
 class AI : public Player {
 public:
-    AI(int color, Board* board);
+    AI(int color, Board* board, IO* io);
     bool play();
-    void choosePiece();
-    void chooseTarget();
     XY chooseKillPiece(vector<XY>& killPositions);
     XY chooseKillTarget(vector<XY>& targetPositions);
+    int getType() const { return PlayerType::AI; }
 };
 
 #endif

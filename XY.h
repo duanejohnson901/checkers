@@ -39,6 +39,14 @@ public:
     bool operator>(const int val) const {
         return x > val || y > val;
     }
+
+    bool operator>=(const int val) const {
+        return x >= val || y >= val;
+    }
+
+    bool operator<=(const int val) const {
+        return x <= val || y <= val;
+    }
 };
 
 #endif
