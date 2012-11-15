@@ -11,3 +11,9 @@
 *.lai
 *.la
 *.a
+
+# Netbeans
+Makefile
+nbproject
+dist
+build
