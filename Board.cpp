@@ -72,10 +72,10 @@ void Board::init() {
 
 void Board::load(vector<string> board) {
     whiteCount = blackCount = 0;
-    for (int x = 0; x < board.size(); x++) {
-        string line = board[x];
-        for (int y = 0; y < size; y++) {
-            char c = line.at(y * 2);
+    for (int y = 0; y < board.size(); y++) {
+        string line = board[y];
+        for (int x = 0; x < size; x++) {
+            char c = line.at(x * 2);
             if (c != '0') {
                 int color = 0;
                 int type = 0;
@@ -163,11 +163,15 @@ bool Board::movePiece(XY xy, XY targetXY) {
     //The sum of the absolute differences of the X and Y coordinates must be 2
     int xMovement = targetX - x;
     int yMovement = targetY - y;
+    int xMovementModulus = abs(xMovement);
+    int yMovementModulus = abs(yMovement);
     int val = abs(xMovement) + abs(yMovement);
     Piece* targetPiece = this->board[targetX][targetY];
     Piece* piece = this->board[x][y];
     //Man pieces can only advance one diagonal
-    if (val != 2 && piece->getType() == PieceType::MAN) {
+    if (piece->getType() == PieceType::MAN && val != 2) {
+        return false;
+    } else if (piece->getType() == PieceType::KING && xMovementModulus != yMovementModulus) {
         return false;
     }
     int color = piece->getColor();
@@ -198,10 +202,8 @@ bool Board::movePiece(XY xy, XY targetXY) {
         return false;
     } else {
         //The "next" position should be blank in order to perform a kill
-        int blankX = xMovement;
-        int blankY = yMovement;
-        blankX += targetX;
-        blankY += targetY;
+        int blankX = x + xMovement + (xMovement>0?1:-1);
+        int blankY = y + yMovement + (yMovement>0?1:-1);
         XY blankXY(blankX, blankY);
 
         if (piece->getType() == PieceType::MAN) {

@@ -4,25 +4,19 @@ Human::Human(int color, Board* board, IO* io) : Player(color, board) {
     this->io = io;
 }
 
-XY Human::choosePiece() {
-    XY xy = io->getMovementPiece();
-    piece = board->getPiece(xy);
-    return xy;
+void Human::choosePiece() {
+    selectedXY = io->getMovementPiece();
+    piece = board->getPiece(selectedXY);
 }
 
-XY Human::chooseTarget() {
-    XY xy = io->getMovementTarget();
-    targetPiece = board->getPiece(xy);
-    return xy;
-}
-
-XY Human::chooseTarget(vector<XY>& positions) {
-    return XY(0, 0);
+void Human::chooseTarget() {
+    targetXY = io->getMovementTarget();
+    targetPiece = board->getPiece(targetXY);
 }
 
 bool Human::play() {
     //Ask the user the piece he wants to select
-    selectedXY = choosePiece();
+    choosePiece();
     //Invalid piece
     if (piece == 0) {
         io->message("No piece.\n");
@@ -33,7 +27,14 @@ bool Human::play() {
         return false;
     }
     io->message("Valid piece.\n");
-    XY targetXY = chooseTarget();
+    chooseTarget();
+    int max = board->getSize()-1;
+    int x = targetXY.getX();
+    int y = targetXY.getY();
+    if (x > max || y > max || x < 0 || y < 0){
+        io->message("Invalid target.\n");
+        return false;
+    }
 
     //The coordinate must not be the same
     if (!board->movePiece(selectedXY, targetXY)) {

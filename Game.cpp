@@ -53,10 +53,21 @@ void Game::newGame() {
 }
 
 void Game::start() {
+    bool playAgain = false;
     while (!this->ended) {
         this->drawer->clear();
         this->drawer->drawInfo(this->turn, this->currentPlayerColor, board->getWhiteCount(), board->getBlackCount());
         this->drawer->drawBoard(this->board);
+
+        if (this->board->getBlackCount() == 0) {
+            this->io->message("White wins!\n");
+            this->ended = true;
+            break;
+        } else if (this->board->getWhiteCount() == 0) {
+            this->io->message("Black wins!\n");
+            this->ended = true;
+            break;
+        }
 
         //Check every piece to verify possible kills
         map<XY, vector<XY> > possibleKills;
@@ -96,22 +107,21 @@ void Game::start() {
             XY targetPosition = player->chooseKillTarget(possibleKills[piecePosition]);
             board->movePiece(piecePosition, targetPosition);
             played = true;
+            playAgain = true;
+        }
+            //The user is playing the second round, but there are no more possible kills (for combo kill), so the turn must end
+        else if (playAgain) {
+            played = true;
+            playAgain = false;
         } else {
             played = player->play();
         }
-        if (played) {
+        //Only change the turn if the player is not supposed to play again
+        if (played && !playAgain) {
             this->currentPlayerColor = this->currentPlayerColor == PieceColor::WHITE ? PieceColor::BLACK : PieceColor::WHITE;
             this->turn++;
         }
         this->board->promote();
-
-        if (this->board->getBlackCount() == 0) {
-            this->io->message("White wins!\n");
-            this->ended = true;
-        } else if (this->board->getWhiteCount() == 0) {
-            this->io->message("Black wins!\n");
-            this->ended = true;
-        }
         this->io->pause();
     }
     this->io->pause();
@@ -129,17 +139,19 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
 
     XY pos;
 
-    //Upper color
-    if (color == PieceColor::WHITE) {
-        pos = xy.plus(1, 1);
-        if (verifyKill(xy, pos)) {
-            positions.push_back(pos);
-        }
-        pos = xy.plus(-1, 1);
-        if (verifyKill(xy, pos)) {
-            positions.push_back(pos);
-        }
-        if (type == PieceType::KING) {
+    //Man verification
+    if (type == PieceType::MAN) {
+        //Upper color
+        if (color == PieceColor::WHITE) {
+            pos = xy.plus(1, 1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+            pos = xy.plus(-1, 1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+        } else {
             pos = xy.plus(1, -1);
             if (verifyKill(xy, pos)) {
                 positions.push_back(pos);
@@ -149,24 +161,37 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
                 positions.push_back(pos);
             }
         }
-    }//Lower color
+    }        
+    //King
     else {
-        pos = xy.plus(1, -1);
-        if (verifyKill(xy, pos)) {
-            positions.push_back(pos);
-        }
-        pos = xy.plus(-1, -1);
-        if (verifyKill(xy, pos)) {
-            positions.push_back(pos);
-        }
-        if (type == PieceType::KING) {
-            pos = xy.plus(1, 1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
-            }
-            pos = xy.plus(-1, 1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
+        int size = board->getSize();
+        //The shortest kill will have a movement length of 1
+        //The longest kill will have a movement length of size-2
+        for (int i = 1; i < size - 1; i++) {
+            //Check all directions
+            for (int direction = 0; direction < 4; direction++) {
+                switch (direction) {
+                        //(+1,+1)
+                    case 0:
+                        pos = xy.plus(i, i);
+                        break;
+                        //(+1,-1)
+                    case 1:
+                        pos = xy.plus(i, -i);
+                        break;
+                        //(-1,+1)
+                    case 2:
+                        pos = xy.plus(-i, i);
+                        break;
+                        //(-1,-1)
+                    case 3:
+                        pos = xy.plus(-i, -i);
+                        break;
+                }
+                if (pos < 0 || pos > size - 1) continue;
+                if (verifyKill(xy, pos)) {
+                    positions.push_back(pos);
+                }
             }
         }
     }
@@ -210,10 +235,10 @@ void Game::load(const char* filename) {
     vector<string> data;
     data.push_back("0 0 0 0 0 0 0 0");
     data.push_back("0 0 0 0 0 0 0 0");
-    data.push_back("0 A A 0 8 0 0 0");
-    data.push_back("0 0 0 @ 0 0 0 0");
-    data.push_back("0 0 0 0 8 0 0 0");
-    data.push_back("0 8 0 0 0 0 0 0");
+    data.push_back("0 A A 0 8 0 8 0");
+    data.push_back("0 0 0 @ 0 8 0 0");
+    data.push_back("0 0 0 0 8 0 8 0");
+    data.push_back("0 0 0 0 0 0 0 0");
     data.push_back("0 0 0 0 0 0 0 0");
     data.push_back("0 0 0 0 0 0 0 0");
     board->load(data);
