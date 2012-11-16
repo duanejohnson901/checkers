@@ -1,4 +1,4 @@
-#include "ConsoleDrawer.h"
+#include "../lib/ConsoleDrawer.h"
 
 void ConsoleDrawer::clear() {
     system("cls");

@@ -6,7 +6,8 @@ AI vs AI
  */
 
 //#include <vld.h> 
-#include "Game.h"
+#include "lib/Game.h"
+
 int main() {
     Game game(GameMode::AI_VS_AI);
     //game.load("");

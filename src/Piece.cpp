@@ -1,4 +1,4 @@
-#include "Piece.h"
+#include "../lib/Piece.h"
 
 Piece::Piece(int color, int type) {
     this->color = color;

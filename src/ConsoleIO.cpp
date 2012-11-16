@@ -1,4 +1,4 @@
-#include "ConsoleIO.h"
+#include "../lib/ConsoleIO.h"
 
 void ConsoleIO::pause() {
     system("pause");

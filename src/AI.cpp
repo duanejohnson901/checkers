@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "AI.h"
+#include "../lib/AI.h"
 
 AI::AI(int color, Board* board, IO* io) : Player(color, board, io) {
 }

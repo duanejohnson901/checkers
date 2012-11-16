@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "../lib/Game.h"
 
 Game::Game(int mode, int boardSize, int startingPlayerColor) {
     this->mode = mode;

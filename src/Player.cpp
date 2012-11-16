@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "../lib/Player.h"
 
 Player::Player(int color, Board* board, IO* io) {
     this->color = color;

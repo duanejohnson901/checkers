@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 
-#include "Board.h"
+#include "../lib/Board.h"
 
 Board::Board(int size) {
     this->size = size;

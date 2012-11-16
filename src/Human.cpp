@@ -1,4 +1,4 @@
-#include "Human.h"
+#include "../lib/Human.h"
 
 Human::Human(int color, Board* board, IO* io) : Player(color, board, io) {
     this->piece = 0;
