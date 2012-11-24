@@ -8,14 +8,20 @@
 
 using namespace std;
 
+/**
+ * ConsoleIO class
+ * Uses the standard IO to interact with the user
+ */
 class ConsoleIO : public IO {
 public:
+    /**
+     * Calls system("pause")
+     */
     void pause() const;
     XY getMovementPiece() const;
     XY getMovementTarget() const;
     XY choosePosition(const vector<XY>& positions) const;
-    void message(const char* message) const;
-    void message(string message) const;
+    void message(const string& message) const;
 };
 
 #endif

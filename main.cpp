@@ -9,7 +9,6 @@ AI vs AI
 #include "lib/Game.h"
 
 int main() {
-    Game game(GameMode::AI_VS_AI);
-    //game.load("");
-    game.newGame();
+    Game game("board.txt");
+    game.start();
 }       

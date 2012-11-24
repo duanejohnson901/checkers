@@ -1,5 +1,49 @@
 #include "../lib/Game.h"
 
+Game::Game(const string& loadFileName) {
+    ifstream infile(loadFileName.c_str());
+    vector<string> boardData;
+    string line;
+    //line counter
+    int i = 0;
+    //board size
+    int boardSize = 0;
+    while (getline(infile, line)) {
+        istringstream is(line, istringstream::in);
+        switch (i){
+            //First line is for game mode number
+            case 0:
+                is >> mode;
+                break;
+            //Second line is for turn number
+            case 1:
+                is >> turn;
+                break;
+            //Third line is for the board size
+            case 2:
+                is >> boardSize;
+                break;
+            //Forth line is for the current player color number
+            case 3:
+                is >> currentPlayerColor;
+                break;
+            //Other lines are for the board
+            default:
+                if (line.length() != boardSize*2-1) {
+                    //Invalid file
+                    throw new exception();
+                }
+                boardData.push_back(line);
+        }
+        i++;
+    }
+    board = new Board(boardSize);
+    board->load(boardData);   
+    drawer = new ConsoleDrawer();
+    io = new ConsoleIO();
+    initMode();
+}
+
 Game::Game(int mode, int boardSize, int startingPlayerColor) {
     this->mode = mode;
     this->board = new Board(boardSize);
@@ -8,7 +52,11 @@ Game::Game(int mode, int boardSize, int startingPlayerColor) {
     this->ended = false;
     this->currentPlayerColor = startingPlayerColor;
     this->turn = 1;
+    initMode();
+    newGame();
+}
 
+void Game::initMode() {
     switch (this->mode) {
         case GameMode::AI_VS_AI:
             this->whitePlayer = new AI(Color::WHITE, *board, *io);
@@ -49,7 +97,6 @@ Game::~Game() {
 
 void Game::newGame() {
     board->init();
-    start();
 }
 
 void Game::start() {
@@ -108,7 +155,7 @@ void Game::start() {
             board->movePiece(piecePosition, targetPosition);
             played = true;
             playAgain = true;
-        }            //The user is playing the second round, but there are no more possible kills (for combo kill), so the turn must end
+        }//The user is playing the second round, but there are no more possible kills (for combo kill), so the turn must end
         else if (playAgain) {
             played = true;
             playAgain = false;
@@ -164,8 +211,7 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
                 positions.push_back(pos);
             }
         }
-    }
-        //King
+    }//King
     else {
         int size = board->getSize();
         //The shortest kill will have a movement length of 1
@@ -230,20 +276,6 @@ bool Game::verifyKill(XY xy, XY targetXY) {
     return !board->hasPiece(blank);
 }
 
-void Game::save(const char* filename) {
+void Game::save(const string& filename) {
 
-}
-
-void Game::load(const char* filename) {
-    vector<string> data;
-    data.push_back("0 0 0 0 0 0 0 0");
-    data.push_back("0 0 0 0 0 0 0 0");
-    data.push_back("0 A A 0 8 0 8 0");
-    data.push_back("0 0 0 @ 0 8 0 0");
-    data.push_back("0 0 0 0 8 0 8 0");
-    data.push_back("0 0 0 0 0 0 0 0");
-    data.push_back("0 0 0 0 0 0 0 0");
-    data.push_back("0 0 0 0 0 0 0 0");
-    board->load(data);
-    start();
 }

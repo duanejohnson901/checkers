@@ -5,7 +5,9 @@
 #include "Piece.h"
 
 /**
- * Screen draw interface
+ * Drawer class
+ * Responsible for drawing the game onto a screen
+ * Abstract base class
  */
 class Drawer {
 public:

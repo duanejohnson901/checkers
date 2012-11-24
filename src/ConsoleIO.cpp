@@ -22,11 +22,7 @@ XY ConsoleIO::getMovementTarget() const {
     return XY(x, y);
 }
 
-void ConsoleIO::message(const char* message) const {
-    cout << message;
-}
-
-void ConsoleIO::message(string message) const {
+void ConsoleIO::message(const string& message) const {
     cout << message;
 }
 

@@ -4,6 +4,16 @@
 #include "Color.h"
 
 /**
+ * PieceType enum
+ */
+namespace PieceType {
+
+    enum {
+        MAN = 1,
+        KING = 2
+    };
+}
+/**
  * Piece class
  */
 class Piece {
@@ -35,14 +45,4 @@ public:
      */
     void promote();
 };
-/**
- * PieceType enum
- */
-namespace PieceType {
-
-    enum {
-        MAN = 1,
-        KING = 2
-    };
-}
 #endif
