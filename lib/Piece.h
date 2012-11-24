@@ -1,27 +1,27 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-namespace PieceColor {
+#include "Color.h"
 
-    enum {
-        WHITE = 1,
-        BLACK = 2
-    };
-};
-namespace PieceType {
-
-    enum {
-        MAN = 1,
-        KING = 2
-    };
-};
-
+/**
+ * Piece class
+ */
 class Piece {
 private:
+    //Color (BLACK/WHITE)
     int color;
+    //Type (MAN/KING)
     int type;
 public:
-    Piece(int color = PieceColor::WHITE, int type = PieceType::MAN);
+    //No default constructor
+    Piece() = delete;
+    
+    /**
+     * Constructor
+     * @param color The piece color
+     * @param type The piece type
+     */
+    Piece(int color = Color::WHITE, int type = PieceType::MAN);
 
     int getColor() const {
         return color;
@@ -30,7 +30,19 @@ public:
     int getType() const {
         return type;
     }
+    /**
+     * Promote the piece from MAN to KING
+     */
     void promote();
 };
+/**
+ * PieceType enum
+ */
+namespace PieceType {
 
+    enum {
+        MAN = 1,
+        KING = 2
+    };
+}
 #endif

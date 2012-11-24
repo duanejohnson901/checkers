@@ -1,12 +1,16 @@
 #ifndef XY_H
 #define XY_H
 
+/**
+ * XY class
+ * Simple class for storing 2D coordinates
+ */
 class XY {
 private:
     int x;
     int y;
 public:
-
+    
     XY() {
         this->x = this->y = 0;
     }
@@ -24,7 +28,13 @@ public:
         return y;
     }
 
-    XY plus(int x, int y) {
+    /**
+     * Returns a new coordinate with x and y incremented by the x and y parameters
+     * @param x
+     * @param y
+     * @return 
+     */
+    XY plus(int x, int y) const {
         return XY(this->x + x, this->y + y);
     }
 
@@ -47,6 +57,7 @@ public:
     bool operator<=(const int val) const {
         return x <= val || y <= val;
     }
+    
 };
 
 #endif

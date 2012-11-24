@@ -32,7 +32,7 @@ private:
     Player* whitePlayer;
     Player* blackPlayer;
 public:
-    Game(int mode, int boardSize = 8, int startingPlayerColor = PieceColor::WHITE);
+    Game(int mode, int boardSize = 8, int startingPlayerColor = Color::WHITE);
     virtual ~Game();
 
     void newGame();

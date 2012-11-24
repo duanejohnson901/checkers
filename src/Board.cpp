@@ -7,23 +7,18 @@ Board::Board(int size) {
     this->size = size;
     this->whiteCount = 0;
     this->blackCount = 0;
-    this->board = new Piece**[8];
     for (int i = 0; i < size; i++) {
-        this->board[i] = new Piece*[8];
+        board.push_back(vector<Piece*>());
         for (int j = 0; j < size; j++) {
-            this->board[i][j] = 0;
+            board[i].push_back(0);
         }
     }
 }
 
 Board::~Board() {
-    for (int i = 0; i < size; i++) {
-        delete [] board[i];
-    }
-    delete [] board;
 }
 
-bool Board::hasPiece(XY xy) const {
+bool Board::hasPiece(const XY& xy) const {
     int max = size - 1;
     int x = xy.getX();
     int y = xy.getY();
@@ -32,7 +27,7 @@ bool Board::hasPiece(XY xy) const {
     return this->board[x][y] != 0;
 }
 
-Piece* Board::getPiece(XY xy) const {
+Piece* Board::getPiece(const XY& xy) const {
     int x = xy.getX();
     int y = xy.getY();
     int max = size - 1;
@@ -41,13 +36,12 @@ Piece* Board::getPiece(XY xy) const {
     return this->board[x][y];
 }
 
-bool Board::setPiece(Piece *piece, XY xy) {
+bool Board::setPiece(Piece *piece, const XY& xy) {
     int x = xy.getX();
     int y = xy.getY();
     int max = size - 1;
     //Out of the array bounds
     if (x > max || y > max || x < 0 || y < 0) return false;
-
     this->board[x][y] = piece;
     return true;
 }
@@ -57,20 +51,20 @@ void Board::init() {
     //White Pieces
     for (int x = 0; x < size; x += 2) {
         for (int y = 0; y < (size * 3) / 8; y++) {
-            this->setPiece(new Piece(PieceColor::WHITE), XY(x + (y % 2 == 0 ? 0 : 1), y));
+            this->setPiece(new Piece(Color::WHITE), XY(x + (y % 2 == 0 ? 0 : 1), y));
             this->whiteCount++;
         }
     }
     //Black Pieces
     for (int x = 0; x < size; x += 2) {
         for (int y = (size * 5) / 8; y < size; y++) {
-            this->setPiece(new Piece(PieceColor::BLACK), XY(x + (y % 2 == 0 ? 0 : 1), y));
+            this->setPiece(new Piece(Color::BLACK), XY(x + (y % 2 == 0 ? 0 : 1), y));
             this->blackCount++;
         }
     }
 }
 
-void Board::load(vector<string> board) {
+void Board::load(const vector<string>& board) {
     whiteCount = blackCount = 0;
     for (int y = 0; y < board.size(); y++) {
         string line = board[y];
@@ -81,22 +75,22 @@ void Board::load(vector<string> board) {
                 int type = 0;
                 switch (c) {
                     case '@':
-                        color = PieceColor::WHITE;
+                        color = Color::WHITE;
                         type = PieceType::KING;
                         whiteCount++;
                         break;
                     case '&':
-                        color = PieceColor::BLACK;
+                        color = Color::BLACK;
                         type = PieceType::KING;
                         blackCount++;
                         break;
                     case 'A':
-                        color = PieceColor::WHITE;
+                        color = Color::WHITE;
                         type = PieceType::MAN;
                         whiteCount++;
                         break;
                     case '8':
-                        color = PieceColor::BLACK;
+                        color = Color::BLACK;
                         type = PieceType::MAN;
                         blackCount++;
                         break;
@@ -108,7 +102,7 @@ void Board::load(vector<string> board) {
     }
 }
 
-bool Board::removePiece(XY xy) {
+bool Board::removePiece(const XY& xy) {
     int x = xy.getX();
     int y = xy.getY();
     int max = size - 1;
@@ -121,7 +115,7 @@ bool Board::removePiece(XY xy) {
     if (piece == 0) {
         return false;
     } else {
-        if (piece->getColor() == PieceColor::WHITE) {
+        if (piece->getColor() == Color::WHITE) {
             this->whiteCount--;
         } else {
             this->blackCount--;
@@ -136,13 +130,13 @@ int Board::promote() {
     for (int x = 0; x < size; x++) {
         //First row
         Piece* piece = this->board[x][0];
-        if (piece != 0 && piece->getColor() == PieceColor::BLACK && piece->getType() == PieceType::MAN) {
+        if (piece != 0 && piece->getColor() == Color::BLACK && piece->getType() == PieceType::MAN) {
             piece->promote();
             promoted++;
         }
         //Last row
         piece = this->board[x][size - 1];
-        if (piece != 0 && piece->getColor() == PieceColor::WHITE && piece->getType() == PieceType::MAN) {
+        if (piece != 0 && piece->getColor() == Color::WHITE && piece->getType() == PieceType::MAN) {
             piece->promote();
             promoted++;
         }
@@ -150,7 +144,7 @@ int Board::promote() {
     return promoted;
 }
 
-bool Board::movePiece(XY xy, XY targetXY) {
+bool Board::movePiece(const XY& xy, const XY& targetXY) {
     int x = xy.getX();
     int y = xy.getY();
     int targetX = targetXY.getX();
@@ -180,13 +174,13 @@ bool Board::movePiece(XY xy, XY targetXY) {
         //Move the piece
         if (piece->getType() == PieceType::MAN) {
             switch (color) {
-                case PieceColor::WHITE:
+                case Color::WHITE:
                     //Can only move down (y can increment)
                     if (yMovement < 0) {
                         return false;
                     }
                     break;
-                case PieceColor::BLACK:
+                case Color::BLACK:
                     //Can only move up (x can increment)
                     if (yMovement > 0) {
                         return false;
@@ -208,13 +202,13 @@ bool Board::movePiece(XY xy, XY targetXY) {
 
         if (piece->getType() == PieceType::MAN) {
             switch (color) {
-                case PieceColor::WHITE:
+                case Color::WHITE:
                     //Can only move down (y can increment)
                     if (yMovement < 0) {
                         return false;
                     }
                     break;
-                case PieceColor::BLACK:
+                case Color::BLACK:
                     //Can only move up (x can increment)
                     if (yMovement > 0) {
                         return false;

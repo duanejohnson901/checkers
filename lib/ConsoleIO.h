@@ -10,12 +10,12 @@ using namespace std;
 
 class ConsoleIO : public IO {
 public:
-    void pause();
-    XY getMovementPiece();
-    XY getMovementTarget();
-    XY choosePosition(vector<XY>& positions);
-    void message(const char* message);
-    void message(string message);
+    void pause() const;
+    XY getMovementPiece() const;
+    XY getMovementTarget() const;
+    XY choosePosition(const vector<XY>& positions) const;
+    void message(const char* message) const;
+    void message(string message) const;
 };
 
 #endif

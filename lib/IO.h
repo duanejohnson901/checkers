@@ -12,12 +12,12 @@ using namespace std;
 
 class IO {
 public:
-    virtual void pause() = 0;
-    virtual XY getMovementPiece() = 0;
-    virtual XY getMovementTarget() = 0;
-    virtual XY choosePosition(vector<XY>& positions) = 0;
-    virtual void message(const char* message) = 0;
-    virtual void message(string message) = 0;
+    virtual void pause() const = 0;
+    virtual XY getMovementPiece() const = 0;
+    virtual XY getMovementTarget() const = 0;
+    virtual XY choosePosition(const vector<XY>& positions) const = 0;
+    virtual void message(const char* message) const = 0;
+    virtual void message(string message) const = 0;
 };
 
 #endif

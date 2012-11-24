@@ -1,10 +1,10 @@
 #include "../lib/ConsoleIO.h"
 
-void ConsoleIO::pause() {
+void ConsoleIO::pause() const {
     system("pause");
 }
 
-XY ConsoleIO::getMovementPiece() {
+XY ConsoleIO::getMovementPiece() const {
     int x, y;
     cout << "Enter the X coordinate of the piece you want to move: ";
     cin >> x;
@@ -13,7 +13,7 @@ XY ConsoleIO::getMovementPiece() {
     return XY(x, y);
 }
 
-XY ConsoleIO::getMovementTarget() {
+XY ConsoleIO::getMovementTarget() const {
     int x, y;
     cout << "Enter the X coordinate you want to move the selected piece to: ";
     cin >> x;
@@ -22,15 +22,15 @@ XY ConsoleIO::getMovementTarget() {
     return XY(x, y);
 }
 
-void ConsoleIO::message(const char* message) {
+void ConsoleIO::message(const char* message) const {
     cout << message;
 }
 
-void ConsoleIO::message(string message) {
+void ConsoleIO::message(string message) const {
     cout << message;
 }
 
-XY ConsoleIO::choosePosition(vector<XY>& positions) {
+XY ConsoleIO::choosePosition(const vector<XY>& positions) const {
     XY xy;
     for (int i = 0; i < positions.size(); i++) {
         int option = i + 1;

@@ -7,11 +7,15 @@
 
 using namespace std;
 
+/**
+ * ConsoleDrawer class
+ * Draws the game into a console window
+ */
 class ConsoleDrawer : public Drawer {
 public:
-    void clear();
-    void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces);
-    void drawBoard(Board *board);
+    void clear() const;
+    void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces) const;
+    void drawBoard(const Board& board) const;
 };
 
 #endif

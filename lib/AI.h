@@ -9,10 +9,11 @@ using namespace std;
 
 class AI : public Player {
 public:
-    AI(int color, Board* board, IO* io);
+    AI() = delete;
+    AI(int color, Board& board, IO& io);
     bool play();
-    XY chooseKillPiece(vector<XY>& killPositions);
-    XY chooseKillTarget(vector<XY>& targetPositions);
+    XY chooseKillPiece(const vector<XY>& killPositions) const;
+    XY chooseKillTarget(const vector<XY>& targetPositions) const;
     int getType() const { return PlayerType::AI; }
 };
 

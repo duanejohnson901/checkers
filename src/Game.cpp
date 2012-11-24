@@ -11,16 +11,16 @@ Game::Game(int mode, int boardSize, int startingPlayerColor) {
 
     switch (this->mode) {
         case GameMode::AI_VS_AI:
-            this->whitePlayer = new AI(PieceColor::WHITE, this->board, this->io);
-            this->blackPlayer = new AI(PieceColor::BLACK, this->board, this->io);
+            this->whitePlayer = new AI(Color::WHITE, *board, *io);
+            this->blackPlayer = new AI(Color::BLACK, *board, *io);
             break;
         case GameMode::PLAYER_VS_PLAYER:
-            this->whitePlayer = new Human(PieceColor::WHITE, this->board, this->io);
-            this->blackPlayer = new Human(PieceColor::BLACK, this->board, this->io);
+            this->whitePlayer = new Human(Color::WHITE, *board, *io);
+            this->blackPlayer = new Human(Color::BLACK, *board, *io);
             break;
         case GameMode::PLAYER_VS_AI:
-            this->whitePlayer = new Human(PieceColor::WHITE, this->board, this->io);
-            this->blackPlayer = new AI(PieceColor::BLACK, this->board, this->io);
+            this->whitePlayer = new Human(Color::WHITE, *board, *io);
+            this->blackPlayer = new AI(Color::BLACK, *board, *io);
             break;
     }
 }
@@ -57,7 +57,7 @@ void Game::start() {
     while (!this->ended) {
         this->drawer->clear();
         this->drawer->drawInfo(this->turn, this->currentPlayerColor, board->getWhiteCount(), board->getBlackCount());
-        this->drawer->drawBoard(this->board);
+        this->drawer->drawBoard(*this->board);
 
         if (this->board->getBlackCount() == 0) {
             this->io->message("White wins!\n");
@@ -97,7 +97,7 @@ void Game::start() {
 
         bool played = false;
         Player* player = 0;
-        if (this->currentPlayerColor == PieceColor::WHITE) {
+        if (this->currentPlayerColor == Color::WHITE) {
             player = this->whitePlayer;
         } else {
             player = this->blackPlayer;
@@ -117,7 +117,7 @@ void Game::start() {
         }
         //Only change the turn if the player is not supposed to play again
         if (played && !playAgain) {
-            this->currentPlayerColor = this->currentPlayerColor == PieceColor::WHITE ? PieceColor::BLACK : PieceColor::WHITE;
+            this->currentPlayerColor = this->currentPlayerColor == Color::WHITE ? Color::BLACK : Color::WHITE;
             this->turn++;
         }
         this->board->promote();
@@ -145,7 +145,7 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
     //Man verification
     if (type == PieceType::MAN) {
         //Upper color
-        if (color == PieceColor::WHITE) {
+        if (color == Color::WHITE) {
             pos = xy.plus(1, 1);
             if (verifyKill(xy, pos)) {
                 positions.push_back(pos);

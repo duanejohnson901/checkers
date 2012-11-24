@@ -4,12 +4,28 @@
 #include "Board.h"
 #include "Piece.h"
 
-class Drawer
-{
+/**
+ * Screen draw interface
+ */
+class Drawer {
 public:
-	virtual void clear() = 0;
-	virtual void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces) = 0;
-	virtual void drawBoard(Board *board) = 0;
+    /**
+     * Clears the screen
+     */
+    virtual void clear() const = 0;
+    /**
+     * Draw basic information
+     * @param turn The number of the turn
+     * @param currentPlayerColor The color of the current player
+     * @param whitePieces The number of remaining white pieces
+     * @param blackPieces The number of remaining black pieces
+     */
+    virtual void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces) const = 0;
+    /**
+     * Draw the board
+     * @param board
+     */
+    virtual void drawBoard(const Board &board) const = 0;
 };
 
 #endif

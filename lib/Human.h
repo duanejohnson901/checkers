@@ -14,12 +14,13 @@ private:
     //The coordinates of the target piece
     XY targetXY;
 public:
-    Human(int color, Board* board, IO *io);
+    Human() = delete;
+    Human(int color, Board& board, IO& io);
     bool play();
     void choosePiece();
     void chooseTarget();
-    XY chooseKillPiece(vector<XY>& killPositions);
-    XY chooseKillTarget(vector<XY>& targetPositions);
+    XY chooseKillPiece(const vector<XY>& killPositions) const;
+    XY chooseKillTarget(const vector<XY>& targetPositions) const;
 
     int getType() const {
         return PlayerType::AI;
