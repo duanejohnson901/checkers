@@ -7,10 +7,11 @@ Board::Board(int size) {
     this->size = size;
     this->whiteCount = 0;
     this->blackCount = 0;
+    //Initialize the vectors with null
     for (int i = 0; i < size; i++) {
         board.push_back(vector<Piece*>());
         for (int j = 0; j < size; j++) {
-            board[i].push_back(0);
+            board[i].push_back(NULL);
         }
     }
 }
@@ -24,7 +25,7 @@ bool Board::hasPiece(const XY& xy) const {
     int y = xy.getY();
     //Out of the array bounds
     if (x > max || y > max || x < 0 || y < 0) return false;
-    return this->board[x][y] != 0;
+    return this->board[x][y] != NULL;
 }
 
 Piece* Board::getPiece(const XY& xy) const {
@@ -70,26 +71,26 @@ void Board::load(const vector<string>& board) {
         string line = board[y];
         for (int x = 0; x < size; x++) {
             char c = line.at(x * 2);
-            if (c != '0') {
+            if (c != BLANK_CHAR) {
                 int color = 0;
                 int type = 0;
                 switch (c) {
-                    case '@':
+                    case WHITE_KING_CHAR:
                         color = Color::WHITE;
                         type = PieceType::KING;
                         whiteCount++;
                         break;
-                    case '&':
+                    case BLACK_KING_CHAR:
                         color = Color::BLACK;
                         type = PieceType::KING;
                         blackCount++;
                         break;
-                    case 'A':
+                    case WHITE_MAN_CHAR:
                         color = Color::WHITE;
                         type = PieceType::MAN;
                         whiteCount++;
                         break;
-                    case '8':
+                    case BLACK_MAN_CHAR:
                         color = Color::BLACK;
                         type = PieceType::MAN;
                         blackCount++;
@@ -112,7 +113,7 @@ bool Board::removePiece(const XY& xy) {
     Piece* piece = this->board[x][y];
     this->board[x][y] = 0;
 
-    if (piece == 0) {
+    if (piece == NULL) {
         return false;
     } else {
         if (piece->getColor() == Color::WHITE) {
@@ -169,7 +170,7 @@ bool Board::movePiece(const XY& xy, const XY& targetXY) {
         return false;
     }
     int color = piece->getColor();
-    if (targetPiece == 0) {
+    if (targetPiece == NULL) {
         //It's a move because there is no piece on the target coordinate
         //Move the piece
         if (piece->getType() == PieceType::MAN) {

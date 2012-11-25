@@ -12,12 +12,6 @@ void ConsoleDrawer::drawInfo(int turn, int currentPlayerColor, int whitePieces, 
 }
 
 void ConsoleDrawer::drawBoard(const Board& board) const{
-    char noPiece = ' ';
-    char whiteMan = 'A';
-    char whiteKing = '@';
-    char blackMan = '8';
-    char blackKing = '&';
-
     int size = board.getSize();
     for (int i = 0; i < size; i++) {
         if (i == 0) {
@@ -35,14 +29,14 @@ void ConsoleDrawer::drawBoard(const Board& board) const{
         cout << "\n " << i << " |";
         for (int j = 0; j < size; j++) {
             Piece* piece = board.getPiece(XY(j, i));
-            char pieceChar = noPiece;
+            char pieceChar = BLANK_CHAR;
             if (piece != 0) {
                 int type = piece->getType();
                 int color = piece->getColor();
                 if (color == Color::WHITE) {
-                    pieceChar = type == PieceType::MAN ? whiteMan : whiteKing;
+                    pieceChar = type == PieceType::MAN ? WHITE_MAN_CHAR : WHITE_KING_CHAR;
                 } else {
-                    pieceChar = type == PieceType::MAN ? blackMan : blackKing;
+                    pieceChar = type == PieceType::MAN ? BLACK_MAN_CHAR : BLACK_KING_CHAR;
                 }
             }
 

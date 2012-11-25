@@ -16,6 +16,7 @@ private:
 public:
     Human() = delete;
     Human(int color, Board& board, IO& io);
+    //Inherited
     bool play();
     void choosePiece();
     void chooseTarget();
@@ -23,7 +24,7 @@ public:
     XY chooseKillTarget(const vector<XY>& targetPositions) const;
 
     int getType() const {
-        return PlayerType::AI;
+        return PlayerType::HUMAN;
     }
 };
 

@@ -10,6 +10,14 @@
 
 using namespace std;
 
+
+//Constants
+static const char BLANK_CHAR = ' ';
+static const char WHITE_MAN_CHAR = 'A';
+static const char WHITE_KING_CHAR = '@';
+static const char BLACK_MAN_CHAR = '8';
+static const char BLACK_KING_CHAR = '&';
+
 /**
  * Board class
  * Responsible for performing and validating movements and kills

@@ -39,6 +39,16 @@ public:
      * @param message The message to be shown
      */
     virtual void message(const string& message) const = 0;
+    /**
+     * Asks the user to input an integer
+     * @return 
+     */
+    virtual int getInt() const = 0;
+    /**
+     * Asks the user to input a string
+     * @return 
+     */
+    virtual string getString() const = 0;
 };
 
 #endif

@@ -93,6 +93,11 @@ private:
      * @return Whether it's possible to kill or not
      */
     bool verifyKill(XY xy, XY targetXY);
+    /**
+     * Shows the game menu (only for human players) and waits for input
+     * @return Whether the game should continue or not
+     */
+    bool menu();
 };
 
 /**

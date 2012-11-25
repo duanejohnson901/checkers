@@ -115,7 +115,20 @@ void Game::start() {
             this->ended = true;
             break;
         }
-
+        
+        Player* player = 0;
+        if (this->currentPlayerColor == Color::WHITE) {
+            player = this->whitePlayer;
+        } else {
+            player = this->blackPlayer;
+        }
+        //Verify if it's a human player and shows the menu
+        if (player->getType() == PlayerType::HUMAN) {
+            if (!menu()) {
+                break;
+            }
+        }
+        
         //Check every piece to verify possible kills
         map<XY, vector<XY> > possibleKills;
 
@@ -143,12 +156,6 @@ void Game::start() {
         this->io->message(out.str());
 
         bool played = false;
-        Player* player = 0;
-        if (this->currentPlayerColor == Color::WHITE) {
-            player = this->whitePlayer;
-        } else {
-            player = this->blackPlayer;
-        }
         if (possibleKillsCount > 0) {
             XY piecePosition = player->chooseKillPiece(piecesXY);
             XY targetPosition = player->chooseKillTarget(possibleKills[piecePosition]);
@@ -175,6 +182,68 @@ void Game::start() {
         }
     }
     this->io->pause();
+}
+
+bool Game::menu() {
+    //Prints the menu
+    io->message("# Menu # Choose an option: #\n");
+    io->message("1 - Play\n");
+    io->message("2 - Save\n");
+    io->message("3 - Quit\n: ");
+    int option = 0;
+    do {
+        option = io->getInt();
+    }
+    while (option < 1 || option > 3);
+    switch (option) {
+        case 2: {
+            io->message("Enter the name of the file: \n");
+            const string fileName = io->getString();
+            save(fileName);
+            return true;
+        }
+        case 3: {
+            ended = true;
+            return false;
+        }
+    }
+    return true;
+}
+
+void Game::save(const string& fileName) {
+    ofstream outfile(fileName.c_str());
+    
+    if(!outfile) {
+        io->message("Cannot open the output file.");
+    } else {
+        int size = board->getSize();
+        outfile << mode << "\n";
+        outfile << turn << "\n";
+        outfile << size << "\n";
+        outfile << currentPlayerColor << "\n";
+        Piece* piece = NULL;
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                piece = board->getPiece(XY(x,y));
+                if (piece == NULL) {
+                    outfile << BLANK_CHAR;
+                } else {
+                    int type = piece->getType();
+                    int color = piece->getColor();
+                    if (type == PieceType::KING) {
+                        outfile << (color==Color::WHITE? WHITE_KING_CHAR: BLACK_KING_CHAR);
+                    } else {
+                        outfile << (color==Color::WHITE? WHITE_MAN_CHAR: BLACK_MAN_CHAR);
+                    }
+                }
+                outfile << " ";
+            }
+            outfile << "\n";
+        }
+        outfile.flush();
+        outfile.close();
+        io->message("Game saved successfully.\n");
+    }
 }
 
 vector<XY> Game::verifyAdjacentKills(XY xy) {
@@ -274,8 +343,4 @@ bool Game::verifyKill(XY xy, XY targetXY) {
         return false;
     }
     return !board->hasPiece(blank);
-}
-
-void Game::save(const string& filename) {
-
 }

@@ -43,3 +43,15 @@ XY ConsoleIO::choosePosition(const vector<XY>& positions) const {
     }
     return positions[option - 1];
 }
+
+int ConsoleIO::getInt() const {
+    int x = 0;
+    cin >> x;
+    return x;
+}
+
+string ConsoleIO::getString() const {
+    string str;
+    cin >> str;
+    return str;
+}

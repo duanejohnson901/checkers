@@ -22,6 +22,8 @@ public:
     XY getMovementTarget() const;
     XY choosePosition(const vector<XY>& positions) const;
     void message(const string& message) const;
+    int getInt() const;
+    string getString() const;
 };
 
 #endif
