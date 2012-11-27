@@ -5,7 +5,7 @@ void ConsoleIO::pause() const {
 }
 
 XY ConsoleIO::getMovementPiece() const {
-    int x, y;
+    uint x, y;
     cout << "Enter the X coordinate of the piece you want to move: ";
     cin >> x;
     cout << "Enter the Y coordinate of the piece you want to move: ";
@@ -14,7 +14,7 @@ XY ConsoleIO::getMovementPiece() const {
 }
 
 XY ConsoleIO::getMovementTarget() const {
-    int x, y;
+    uint x, y;
     cout << "Enter the X coordinate you want to move the selected piece to: ";
     cin >> x;
     cout << "Enter the Y coordinate you want to move the selected piece to: ";
@@ -28,8 +28,8 @@ void ConsoleIO::message(const string& message) const {
 
 XY ConsoleIO::choosePosition(const vector<XY>& positions) const {
     XY xy;
-    for (int i = 0; i < positions.size(); i++) {
-        int option = i + 1;
+    for (uint i = 0; i < positions.size(); i++) {
+        uint option = i + 1;
         xy = positions[i];
 
         ostringstream out;
@@ -37,7 +37,7 @@ XY ConsoleIO::choosePosition(const vector<XY>& positions) const {
         cout << out.str();
     }
     cout << ": ";
-    int option = 0;
+    uint option = 0;
     while (option <= 0 || option > positions.size()) {
         cin >> option;
     }
@@ -45,7 +45,7 @@ XY ConsoleIO::choosePosition(const vector<XY>& positions) const {
 }
 
 int ConsoleIO::getInt() const {
-    int x = 0;
+    uint x = 0;
     cin >> x;
     return x;
 }

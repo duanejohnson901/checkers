@@ -2,6 +2,7 @@
 #define CONSOLE_DRAWER_H
 
 #include "Drawer.h"
+#include "Types.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -14,7 +15,7 @@ using namespace std;
 class ConsoleDrawer : public Drawer {
 public:
     void clear() const;
-    void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces) const;
+    void drawInfo(uint turn, uint currentPlayerColor, uint whitePieces, uint blackPieces) const;
     void drawBoard(const Board& board) const;
 };
 

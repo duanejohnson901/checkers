@@ -1,6 +1,7 @@
 #ifndef DRAWER_H
 #define DRAWER_H
 
+#include "Types.h"
 #include "Board.h"
 #include "Piece.h"
 
@@ -22,7 +23,7 @@ public:
      * @param whitePieces The number of remaining white pieces
      * @param blackPieces The number of remaining black pieces
      */
-    virtual void drawInfo(int turn, int currentPlayerColor, int whitePieces, int blackPieces) const = 0;
+    virtual void drawInfo(uint turn, uint currentPlayerColor, uint whitePieces, uint blackPieces) const = 0;
     /**
      * Draw the board
      * @param board

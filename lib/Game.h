@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "AI.h"
 #include "Human.h"
+#include "Types.h"
 
 #include <memory>
 #include <map>
@@ -17,18 +18,26 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <stdexcept>
 
 #include <windows.h>
 
 using namespace std;
 
+/**
+ * Game class
+ * Constrols the game loop
+ */
 class Game {
 private:
     //The color of the current player
-    int currentPlayerColor;
-    int mode;
+    uint currentPlayerColor;
+    //The game mode @see GameMode enum below
+    uint mode;
     //The current turn number (first is 0)
-    int turn;
+    uint turn;
+    //The level of the AI from 1 to 9 (if any) @see AILevel enums
+    uint aiLevel;
     //Flag to control the game loop
     bool ended;
     //Pointer to the game board
@@ -55,7 +64,7 @@ public:
      * @param boardSize The size of the board
      * @param startingPlayerColor The starting player color
      */
-    Game(int mode, int boardSize = 8, int startingPlayerColor = Color::WHITE);
+    Game(uint mode, uint boardSize = 8, uint startingPlayerColor = Color::WHITE, uint aiLevel = AILevel::MEDIUM);
     virtual ~Game();
     /**
      * Must be called to start the game

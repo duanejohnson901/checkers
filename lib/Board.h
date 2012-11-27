@@ -3,10 +3,12 @@
 
 #include "Piece.h"
 #include "XY.h"
+#include "Types.h"
 
 #include <cmath>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 using namespace std;
 
@@ -18,6 +20,7 @@ static const char WHITE_KING_CHAR = '@';
 static const char BLACK_MAN_CHAR = '8';
 static const char BLACK_KING_CHAR = '&';
 
+static const uint MAX_BOARD_SIZE = 12;
 /**
  * Board class
  * Responsible for performing and validating movements and kills
@@ -25,12 +28,12 @@ static const char BLACK_KING_CHAR = '&';
  */
 class Board {
 private:
-    //The size of the board
-    int size;
+    //The size of the board (@see MAX_BOARD_SIZE constant)
+    uint size;
     //Number of white pieces "alive"
-    int whiteCount;
+    uint whiteCount;
     //Number of black pieces "alive"
-    int blackCount;
+    uint blackCount;
     //The piece matrix
     vector<vector<Piece*> > board;
 public:
@@ -38,7 +41,7 @@ public:
      * Constructor
      * @param size The size of the board (always square)
      */
-    Board(int size = 8);
+    Board(uint size = 8);
     /**
      * Destructor
      */
@@ -69,7 +72,7 @@ public:
      * Return the size of the board
      * @return 
      */
-    int getSize() const {
+    uint getSize() const {
         return size;
     }
 
@@ -77,7 +80,7 @@ public:
      * Return the number of white pieces "alive"
      * @return 
      */
-    int getWhiteCount() const {
+    uint getWhiteCount() const {
         return whiteCount;
     }
 
@@ -85,7 +88,7 @@ public:
      * Return the number of black pieces "alive"
      * @return 
      */
-    int getBlackCount() const {
+    uint getBlackCount() const {
         return blackCount;
     }
     /**
@@ -128,7 +131,7 @@ public:
      * Promote all the man that are on the first or last row according to the color
      * @return the number of pieces promoted
      */
-    int promote();
+    uint promote();
 };
 
 #endif

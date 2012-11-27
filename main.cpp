@@ -9,6 +9,6 @@ AI vs AI
 #include "lib/Game.h"
 
 int main() {
-    Game game("board.txt");
+    Game game("test2.txt");
     game.start();
 }       

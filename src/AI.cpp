@@ -2,16 +2,17 @@
 
 #include "../lib/AI.h"
 
-AI::AI(int color, Board& board, IO& io) : Player(color, board, io) {
+AI::AI(uint color, Board& board, IO& io, uint level) : Player(color, board, io) {
+    this->level = level;
 }
 
 bool AI::play() {
     //Search for all piece
     vector<XY> piecesPosition;
     vector<Piece*> pieces;
-    int size = board.getSize();
-    for (int x = 0; x < size; x++) {
-        for (int y = 0; y < size; y++) {
+    uint size = board.getSize();
+    for (uint x = 0; x < size; x++) {
+        for (uint y = 0; y < size; y++) {
             XY xy(x, y);
             Piece* piece = board.getPiece(xy);
             if (piece != 0 && piece->getColor() == color) {
@@ -24,7 +25,7 @@ bool AI::play() {
     //Choose the first piece that can do any movement
     vector<int> numbers;
     while (true) {
-        int i = Random::get(0, pieces.size() - 1);
+        uint i = Random::get(0, pieces.size() - 1);
         if (find(numbers.begin(), numbers.end(), i) != numbers.end()) {
             io.message("@");
             continue;
@@ -34,8 +35,8 @@ bool AI::play() {
         Piece* piece = pieces[i];
         XY xy = piecesPosition[i];
 
-        int color = piece->getColor();
-        int type = piece->getType();
+        uint color = piece->getColor();
+        uint type = piece->getType();
 
         vector<XY> movements;
         switch (type) {
@@ -76,9 +77,15 @@ bool AI::play() {
 }
 
 XY AI::chooseKillPiece(const vector<XY>& killPositions) const {
-    return killPositions[Random::get(0, killPositions.size() - 1)];
+    switch (level) {
+        default:
+        return killPositions[Random::get(0, killPositions.size() - 1)];
+    }
 }
 
 XY AI::chooseKillTarget(const vector<XY>& targetPositions) const {
-    return targetPositions[Random::get(0, targetPositions.size() - 1)];
+    switch (level) {
+        default:
+        return targetPositions[Random::get(0, targetPositions.size() - 1)];
+    }
 }

@@ -1,6 +1,7 @@
 #ifndef PIECE_H
 #define PIECE_H
 
+#include "Types.h"
 #include "Color.h"
 
 /**
@@ -19,9 +20,9 @@ namespace PieceType {
 class Piece {
 private:
     //Color (BLACK/WHITE)
-    int color;
+    uint color;
     //Type (MAN/KING)
-    int type;
+    uint type;
 public:
     //No default constructor
     Piece() = delete;
@@ -31,13 +32,13 @@ public:
      * @param color The piece color
      * @param type The piece type
      */
-    Piece(int color = Color::WHITE, int type = PieceType::MAN);
+    Piece(uint color = Color::WHITE, uint type = PieceType::MAN);
 
-    int getColor() const {
+    uint getColor() const {
         return color;
     }
 
-    int getType() const {
+    uint getType() const {
         return type;
     }
     /**

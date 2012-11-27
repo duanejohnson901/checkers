@@ -1,30 +1,32 @@
 #ifndef XY_H
 #define XY_H
 
+#include "Types.h"
+
 /**
  * XY class
  * Simple class for storing 2D coordinates
  */
 class XY {
 private:
-    int x;
-    int y;
+    uint x;
+    uint y;
 public:
     
     XY() {
         this->x = this->y = 0;
     }
 
-    XY(int x, int y) {
+    XY(uint x, uint y) {
         this->x = x;
         this->y = y;
     }
 
-    int getX() const {
+    uint getX() const {
         return x;
     }
 
-    int getY() const {
+    uint getY() const {
         return y;
     }
 
@@ -34,7 +36,7 @@ public:
      * @param y
      * @return 
      */
-    XY plus(int x, int y) const {
+    XY plus(uint x, uint y) const {
         return XY(this->x + x, this->y + y);
     }
 
@@ -42,19 +44,19 @@ public:
         return x == other.x ? y < other.y : x < other.x;
     }
 
-    bool operator<(const int val) const {
+    bool operator<(const uint val) const {
         return x < val || y < val;
     }
 
-    bool operator>(const int val) const {
+    bool operator>(const uint val) const {
         return x > val || y > val;
     }
 
-    bool operator>=(const int val) const {
+    bool operator>=(const uint val) const {
         return x >= val || y >= val;
     }
 
-    bool operator<=(const int val) const {
+    bool operator<=(const uint val) const {
         return x <= val || y <= val;
     }
     

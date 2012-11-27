@@ -5,37 +5,45 @@ Game::Game(const string& loadFileName) {
     vector<string> boardData;
     string line;
     //line counter
-    int i = 0;
+    uint i = 0;
     //board size
-    int boardSize = 0;
-    while (getline(infile, line)) {
-        istringstream is(line, istringstream::in);
-        switch (i){
-            //First line is for game mode number
-            case 0:
-                is >> mode;
-                break;
-            //Second line is for turn number
-            case 1:
-                is >> turn;
-                break;
-            //Third line is for the board size
-            case 2:
-                is >> boardSize;
-                break;
-            //Forth line is for the current player color number
-            case 3:
-                is >> currentPlayerColor;
-                break;
-            //Other lines are for the board
-            default:
-                if (line.length() != boardSize*2-1) {
-                    //Invalid file
-                    throw new exception();
-                }
-                boardData.push_back(line);
+    uint boardSize = 0;
+    try {
+        while (getline(infile, line)) {
+            istringstream is(line, istringstream::in);
+            switch (i){
+                //First line is for game mode number
+                case 0:
+                    is >> mode;
+                    break;
+                //Second line is for turn number
+                case 1:
+                    is >> turn;
+                    break;
+                //Third line is for the board size
+                case 2:
+                    is >> boardSize;
+                    break;
+                //Forth line is for the current player color number
+                case 3:
+                    is >> currentPlayerColor;
+                    break;
+                //Fifth line is for the AI level
+                case 4:
+                    is >> aiLevel;
+                    break;
+                //Other lines are for the board
+                default:
+                    if (line.length() < boardSize*2-1) {
+                        //Invalid file
+                        throw new invalid_argument("Invalid game file: incorrect board line length");
+                    }
+                    boardData.push_back(line);
+            }
+            i++;
         }
-        i++;
+    } catch (const exception& ex) {
+        throw new invalid_argument("Invalid game file");
     }
     board = new Board(boardSize);
     board->load(boardData);   
@@ -44,8 +52,21 @@ Game::Game(const string& loadFileName) {
     initMode();
 }
 
-Game::Game(int mode, int boardSize, int startingPlayerColor) {
+Game::Game(uint mode, uint boardSize, uint startingPlayerColor, uint aiLevel) {
+    if (aiLevel > AILevel::HARDEST || aiLevel < AILevel::EASIEST) {
+        throw new invalid_argument("Invalid AI Level");
+    } 
+    if (mode != GameMode::AI_VS_AI && mode != GameMode::PLAYER_VS_AI && mode != GameMode::PLAYER_VS_PLAYER) {
+        throw new invalid_argument("Invalid Game Mode");
+    }
+    if (startingPlayerColor != Color::WHITE && startingPlayerColor != Color::BLACK) {
+        throw new invalid_argument("Invalid starting player color");
+    }
+    if (boardSize > MAX_BOARD_SIZE) {
+        throw new invalid_argument("Invalid board size");
+    }
     this->mode = mode;
+    this->aiLevel = aiLevel;
     this->board = new Board(boardSize);
     this->drawer = new ConsoleDrawer();
     this->io = new ConsoleIO();
@@ -59,8 +80,8 @@ Game::Game(int mode, int boardSize, int startingPlayerColor) {
 void Game::initMode() {
     switch (this->mode) {
         case GameMode::AI_VS_AI:
-            this->whitePlayer = new AI(Color::WHITE, *board, *io);
-            this->blackPlayer = new AI(Color::BLACK, *board, *io);
+            this->whitePlayer = new AI(Color::WHITE, *board, *io, aiLevel);
+            this->blackPlayer = new AI(Color::BLACK, *board, *io, aiLevel);
             break;
         case GameMode::PLAYER_VS_PLAYER:
             this->whitePlayer = new Human(Color::WHITE, *board, *io);
@@ -68,7 +89,7 @@ void Game::initMode() {
             break;
         case GameMode::PLAYER_VS_AI:
             this->whitePlayer = new Human(Color::WHITE, *board, *io);
-            this->blackPlayer = new AI(Color::BLACK, *board, *io);
+            this->blackPlayer = new AI(Color::BLACK, *board, *io, aiLevel);
             break;
     }
 }
@@ -79,11 +100,11 @@ Game::~Game() {
     delete this->whitePlayer;
     delete this->blackPlayer;
 
-    int size = this->board->getSize();
+    uint size = this->board->getSize();
 
-    int deleted = 0;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
+    uint deleted = 0;
+    for (uint i = 0; i < size; i++) {
+        for (uint j = 0; j < size; j++) {
             Piece* piece = this->board->getPiece(XY(i, j));
             if (piece != 0) {
                 delete piece;
@@ -134,11 +155,11 @@ void Game::start() {
 
         vector<XY> piecesXY;
 
-        int size = board->getSize();
-        int possibleKillsCount = 0;
+        uint size = board->getSize();
+        uint possibleKillsCount = 0;
 
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
+        for (uint x = 0; x < size; x++) {
+            for (uint y = 0; y < size; y++) {
                 XY xy(x, y);
                 Piece* piece = board->getPiece(xy);
                 if (piece != 0 && piece->getColor() == currentPlayerColor) {
@@ -190,7 +211,7 @@ bool Game::menu() {
     io->message("1 - Play\n");
     io->message("2 - Save\n");
     io->message("3 - Quit\n: ");
-    int option = 0;
+    uint option = 0;
     do {
         option = io->getInt();
     }
@@ -216,20 +237,20 @@ void Game::save(const string& fileName) {
     if(!outfile) {
         io->message("Cannot open the output file.");
     } else {
-        int size = board->getSize();
+        uint size = board->getSize();
         outfile << mode << "\n";
         outfile << turn << "\n";
         outfile << size << "\n";
         outfile << currentPlayerColor << "\n";
         Piece* piece = NULL;
-        for (int y = 0; y < size; y++) {
-            for (int x = 0; x < size; x++) {
+        for (uint y = 0; y < size; y++) {
+            for (uint x = 0; x < size; x++) {
                 piece = board->getPiece(XY(x,y));
                 if (piece == NULL) {
                     outfile << BLANK_CHAR;
                 } else {
-                    int type = piece->getType();
-                    int color = piece->getColor();
+                    uint type = piece->getType();
+                    uint color = piece->getColor();
                     if (type == PieceType::KING) {
                         outfile << (color==Color::WHITE? WHITE_KING_CHAR: BLACK_KING_CHAR);
                     } else {
@@ -253,8 +274,8 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
         return positions;
     }
 
-    int type = piece->getType();
-    int color = piece->getColor();
+    uint type = piece->getType();
+    uint color = piece->getColor();
 
     XY pos;
 
@@ -282,12 +303,12 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
         }
     }//King
     else {
-        int size = board->getSize();
+        uint size = board->getSize();
         //The shortest kill will have a movement length of 1
         //The longest kill will have a movement length of size-2
-        for (int i = 1; i < size - 1; i++) {
+        for (uint i = 1; i < size - 1; i++) {
             //Check all directions
-            for (int direction = 0; direction < 4; direction++) {
+            for (uint direction = 0; direction < 4; direction++) {
                 switch (direction) {
                         //(+1,+1)
                     case 0:
@@ -306,7 +327,7 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
                         pos = xy.plus(-i, -i);
                         break;
                 }
-                if (pos < 0 || pos > size - 1) continue;
+                if (pos > size - 1) continue;
                 if (verifyKill(xy, pos)) {
                     positions.push_back(pos);
                 }
@@ -317,12 +338,12 @@ vector<XY> Game::verifyAdjacentKills(XY xy) {
 }
 
 bool Game::verifyKill(XY xy, XY targetXY) {
-    int max = board->getSize() - 1;
-    int x = xy.getX();
-    int y = xy.getY();
-    int targetX = targetXY.getX();
-    int targetY = targetXY.getY();
-    if (x < 0 || y < 0 || targetX < 0 || targetY < 0 || x > max || y > max || targetX > max || targetY > max) {
+    uint max = board->getSize() - 1;
+    uint x = xy.getX();
+    uint y = xy.getY();
+    uint targetX = targetXY.getX();
+    uint targetY = targetXY.getY();
+    if (x > max || y > max || targetX > max || targetY > max) {
         return false;
     }
 
@@ -330,9 +351,9 @@ bool Game::verifyKill(XY xy, XY targetXY) {
     Piece* targetPiece = board->getPiece(targetXY);
     int xMovement = targetX - x;
     int yMovement = targetY - y;
-    int blankX = xMovement + (xMovement > 0 ? 1 : -1) + x;
-    int blankY = yMovement + (yMovement > 0 ? 1 : -1) + y;
-    if (blankX > max || blankY > max || blankX < 0 || blankY < 0) {
+    uint blankX = xMovement + (xMovement > 0 ? 1 : -1) + x;
+    uint blankY = yMovement + (yMovement > 0 ? 1 : -1) + y;
+    if (blankX > max || blankY > max) {
         return false;
     }
     XY blank(blankX, blankY);

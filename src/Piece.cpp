@@ -1,6 +1,6 @@
 #include "../lib/Piece.h"
 
-Piece::Piece(int color, int type) {
+Piece::Piece(uint color, uint type) {
     this->color = color;
     this->type = type;
 }

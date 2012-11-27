@@ -1,6 +1,6 @@
 #include "../lib/Human.h"
 
-Human::Human(int color, Board& board, IO& io) : Player(color, board, io) {
+Human::Human(uint color, Board& board, IO& io) : Player(color, board, io) {
     this->piece = 0;
     this->targetPiece = 0;
 }
@@ -29,10 +29,10 @@ bool Human::play() {
     }
     io.message("Valid piece.\n");
     chooseTarget();
-    int max = board.getSize()-1;
-    int x = targetXY.getX();
-    int y = targetXY.getY();
-    if (x > max || y > max || x < 0 || y < 0){
+    uint max = board.getSize()-1;
+    uint x = targetXY.getX();
+    uint y = targetXY.getY();
+    if (x > max || y > max){
         io.message("Invalid target.\n");
         return false;
     }

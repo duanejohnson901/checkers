@@ -17,7 +17,7 @@ using namespace std;
 class Player {
 protected:
     //Player color
-    int color;
+    uint color;
     //IO for intereaction (displaying messages, gathering user input, etc)
     IO& io;
     //Reference to the board
@@ -33,7 +33,7 @@ public:
      * @param board A reference to the board
      * @param io A reference to the IO system for interactions
      */
-    Player(int color, Board& board, IO& io);
+    Player(uint color, Board& board, IO& io);
     /**
      * 
      * @return 
@@ -56,7 +56,7 @@ public:
      * Must be implemented and return AI or HUMAN
      * @return 
      */
-    virtual int getType() const = 0;
+    virtual uint getType() const = 0;
 };
 
 /**

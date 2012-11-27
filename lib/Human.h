@@ -2,6 +2,7 @@
 #define HUMAN_H
 
 #include "Player.h"
+#include "Types.h"
 
 class Human : public Player {
 private:
@@ -15,7 +16,7 @@ private:
     XY targetXY;
 public:
     Human() = delete;
-    Human(int color, Board& board, IO& io);
+    Human(uint color, Board& board, IO& io);
     //Inherited
     bool play();
     void choosePiece();
@@ -23,7 +24,7 @@ public:
     XY chooseKillPiece(const vector<XY>& killPositions) const;
     XY chooseKillTarget(const vector<XY>& targetPositions) const;
 
-    int getType() const {
+    uint getType() const {
         return PlayerType::HUMAN;
     }
 };
