@@ -51,7 +51,11 @@ Game::Game(const string& loadFileName) {
     board = new Board(boardSize);
     board->load(boardData);   
     drawer = new ConsoleDrawer();
+#ifdef CONSOLE
     io = new ConsoleIO();
+#else
+    
+#endif
     initMode();
 }
 

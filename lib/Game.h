@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+//#define CONSOLE
+
 #include "Board.h"
 #include "Drawer.h"
 #include "ConsoleDrawer.h"
