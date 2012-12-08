@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <map>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ static const char BLACK_MAN_CHAR = '8';
 static const char BLACK_KING_CHAR = '&';
 
 static const uint MAX_BOARD_SIZE = 12;
+
 /**
  * Board class
  * Responsible for performing and validating movements and kills
@@ -42,6 +44,13 @@ public:
      * @param size The size of the board (always square)
      */
     Board(uint size = 8);
+    /**
+     * Copy constructor
+     * Necessary because shallow copy must not occur
+     * @param copy
+     */
+    Board(const Board& copy);
+    
     /**
      * Destructor
      */
@@ -132,6 +141,26 @@ public:
      * @return the number of pieces promoted
      */
     uint promote();
+    /**
+     * Verify if there are any mandatory adjacent kills for the given piece coordinates
+     * @param xy The coordinates of the piece to be verified
+     * @return A list of adjacent kill positions
+     */
+    vector<XY> verifyAdjacentKills(XY xy) const;
+    /**
+     * Verify if the xy is a valid piece and targetXY is a valid target and the kill can be performed
+     * @param xy The piece position
+     * @param targetXY The target piece position
+     * @return Whether it's possible to kill or not
+     */
+    bool verifyKill(XY xy, XY targetXY) const;
+    /**
+     * Verify and return all possible kills for the given player color
+     * @param playerColor
+     * @param possibleKillsCount The number of possible kills
+     * @return 
+     */
+    uint verifyPossibleKills(uint playerColor, map<XY, vector<XY> >& possibleKills, vector<XY>& piecesXY) const;
 };
 
 #endif

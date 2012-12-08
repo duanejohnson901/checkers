@@ -21,7 +21,7 @@ public:
     bool play();
     void choosePiece();
     void chooseTarget();
-    XY chooseKillPiece(const vector<XY>& killPositions) const;
+    XY chooseKillPiece(const vector<XY>& killPositions, const map<XY, vector<XY> >& possibleKills) const;
     XY chooseKillTarget(const vector<XY>& targetPositions) const;
 
     uint getType() const {

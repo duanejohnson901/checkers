@@ -54,12 +54,12 @@ public:
     //No default constructor
     Game() = delete;
     /**
-     * Loads the game from a given file
+     * Load the game from a given file
      * @param filename
      */
     Game(const string& loadFileName);
     /**
-     * Creates a new game
+     * Create a new game
      * @param mode The game mode (@see GameMode enum)
      * @param boardSize The size of the board
      * @param startingPlayerColor The starting player color
@@ -78,7 +78,7 @@ private:
      */
     void save(const string& filename);
     /**
-     * Creates a new game
+     * Create a new game
      */
     void newGame();
     /**
@@ -90,20 +90,7 @@ private:
      */
     void initializeBoard();
     /**
-     * Verify if there are any mandatory adjacent kills for the given piece coordinates
-     * @param xy The coordinates of the piece to be verified
-     * @return A list of adjacent kill positions
-     */
-    vector<XY> verifyAdjacentKills(XY xy);
-    /**
-     * Verify if the xy is a valid piece and targetXY is a valid target and the kill can be performed
-     * @param xy The piece position
-     * @param targetXY The target piece position
-     * @return Whether it's possible to kill or not
-     */
-    bool verifyKill(XY xy, XY targetXY);
-    /**
-     * Shows the game menu (only for human players) and waits for input
+     * Show the game menu (only for human players) and waits for input
      * @return Whether the game should continue or not
      */
     bool menu();

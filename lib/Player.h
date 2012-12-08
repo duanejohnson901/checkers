@@ -42,9 +42,10 @@ public:
     /**
      * Chooses a piece (from the player) which will be used to perform a kill (mandatory kill)
      * @param killPositions
+     * @param possibleKills A map containing all possible killer pieces and their targets
      * @return 
      */
-    virtual XY chooseKillPiece(const vector<XY>& killPositions) const = 0;
+    virtual XY chooseKillPiece(const vector<XY>& killPositions, const map<XY, vector<XY> >& possibleKills) const = 0;
     /**
      * Chooses a target piece which will be killed based on a list of targets using a previously selected piece from chooseKillPiece()
      * @param targetPositions The list of the kill possibilities (positions)

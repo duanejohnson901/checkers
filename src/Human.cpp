@@ -46,7 +46,7 @@ bool Human::play() {
     return true;
 }
 
-XY Human::chooseKillPiece(const vector<XY>& killPositions) const {
+XY Human::chooseKillPiece(const vector<XY>& killPositions, const map<XY, vector<XY> >& possibleKills) const {
     //Only one possibility...
     if (killPositions.size() == 1) {
         return killPositions[0];

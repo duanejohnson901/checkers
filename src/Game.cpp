@@ -8,6 +8,9 @@ Game::Game(const string& loadFileName) {
     uint i = 0;
     //board size
     uint boardSize = 0;
+    if (!infile.good()) {
+        throw new invalid_argument("Invalid file");
+    }
     try {
         while (getline(infile, line)) {
             istringstream is(line, istringstream::in);
@@ -99,21 +102,7 @@ Game::~Game() {
     delete this->io;
     delete this->whitePlayer;
     delete this->blackPlayer;
-
-    uint size = this->board->getSize();
-
-    uint deleted = 0;
-    for (uint i = 0; i < size; i++) {
-        for (uint j = 0; j < size; j++) {
-            Piece* piece = this->board->getPiece(XY(i, j));
-            if (piece != 0) {
-                delete piece;
-                deleted++;
-            }
-        }
-    }
     delete this->board;
-    cout << deleted << " pieces deleted";
 }
 
 void Game::newGame() {
@@ -152,33 +141,20 @@ void Game::start() {
         
         //Check every piece to verify possible kills
         map<XY, vector<XY> > possibleKills;
-
         vector<XY> piecesXY;
-
-        uint size = board->getSize();
-        uint possibleKillsCount = 0;
-
-        for (uint x = 0; x < size; x++) {
-            for (uint y = 0; y < size; y++) {
-                XY xy(x, y);
-                Piece* piece = board->getPiece(xy);
-                if (piece != 0 && piece->getColor() == currentPlayerColor) {
-                    vector<XY> poss = verifyAdjacentKills(xy);
-                    possibleKillsCount += poss.size();
-                    possibleKills[xy] = poss;
-                    if (poss.size() > 0) {
-                        piecesXY.push_back(xy);
-                    }
-                }
-            }
-        }
+        int possibleKillsCount = board->verifyPossibleKills(currentPlayerColor, possibleKills, piecesXY);
+        
         ostringstream out;
         out << "Possible kills: " << possibleKillsCount << "\n";
         this->io->message(out.str());
 
         bool played = false;
         if (possibleKillsCount > 0) {
-            XY piecePosition = player->chooseKillPiece(piecesXY);
+            if (possibleKills.size() <= 0 || piecesXY.size() <= 0) {
+                //This should not happen
+                throw new exception;
+            }
+            XY piecePosition = player->chooseKillPiece(piecesXY, possibleKills);
             XY targetPosition = player->chooseKillTarget(possibleKills[piecePosition]);
             board->movePiece(piecePosition, targetPosition);
             played = true;
@@ -267,101 +243,3 @@ void Game::save(const string& fileName) {
     }
 }
 
-vector<XY> Game::verifyAdjacentKills(XY xy) {
-    Piece* piece = board->getPiece(xy);
-    vector<XY> positions;
-    if (piece == 0) {
-        return positions;
-    }
-
-    uint type = piece->getType();
-    uint color = piece->getColor();
-
-    XY pos;
-
-    //Man verification
-    if (type == PieceType::MAN) {
-        //Upper color
-        if (color == Color::WHITE) {
-            pos = xy.plus(1, 1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
-            }
-            pos = xy.plus(-1, 1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
-            }
-        } else {
-            pos = xy.plus(1, -1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
-            }
-            pos = xy.plus(-1, -1);
-            if (verifyKill(xy, pos)) {
-                positions.push_back(pos);
-            }
-        }
-    }//King
-    else {
-        uint size = board->getSize();
-        //The shortest kill will have a movement length of 1
-        //The longest kill will have a movement length of size-2
-        for (uint i = 1; i < size - 1; i++) {
-            //Check all directions
-            for (uint direction = 0; direction < 4; direction++) {
-                switch (direction) {
-                        //(+1,+1)
-                    case 0:
-                        pos = xy.plus(i, i);
-                        break;
-                        //(+1,-1)
-                    case 1:
-                        pos = xy.plus(i, -i);
-                        break;
-                        //(-1,+1)
-                    case 2:
-                        pos = xy.plus(-i, i);
-                        break;
-                        //(-1,-1)
-                    case 3:
-                        pos = xy.plus(-i, -i);
-                        break;
-                }
-                if (pos > size - 1) continue;
-                if (verifyKill(xy, pos)) {
-                    positions.push_back(pos);
-                }
-            }
-        }
-    }
-    return positions;
-}
-
-bool Game::verifyKill(XY xy, XY targetXY) {
-    uint max = board->getSize() - 1;
-    uint x = xy.getX();
-    uint y = xy.getY();
-    uint targetX = targetXY.getX();
-    uint targetY = targetXY.getY();
-    if (x > max || y > max || targetX > max || targetY > max) {
-        return false;
-    }
-
-    Piece* piece = board->getPiece(xy);
-    Piece* targetPiece = board->getPiece(targetXY);
-    int xMovement = targetX - x;
-    int yMovement = targetY - y;
-    uint blankX = xMovement + (xMovement > 0 ? 1 : -1) + x;
-    uint blankY = yMovement + (yMovement > 0 ? 1 : -1) + y;
-    if (blankX > max || blankY > max) {
-        return false;
-    }
-    XY blank(blankX, blankY);
-    if (piece == 0 || targetPiece == 0) {
-        return false;
-    }
-    if (piece->getColor() == targetPiece->getColor()) {
-        return false;
-    }
-    return !board->hasPiece(blank);
-}

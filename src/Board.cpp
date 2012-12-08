@@ -16,7 +16,38 @@ Board::Board(uint size) {
     }
 }
 
+Board::Board(const Board& copy) {
+    this->size = copy.size;
+    this->whiteCount = copy.whiteCount;
+    this->blackCount = copy.blackCount;
+    //Initialize the vectors with NULL
+    for (uint i = 0; i < size; i++) {
+        board.push_back(vector<Piece*>());
+        for (uint j = 0; j < size; j++) {
+            board[i].push_back(NULL);
+        }
+    }
+
+    for (int x = 0; x < size; x++){ 
+        for (int y = 0; y < size; y++) {
+            if (copy.board[x][y] != NULL) {
+                Piece* pieceCopy = new Piece(*copy.board[x][y]);
+                this->board[x][y] = pieceCopy;
+            }
+        }
+    }
+}
+
 Board::~Board() {
+    //Delete any remaining pieces - this will occur for board copies
+    for (int x = 0; x < size; x++){ 
+        for (int y = 0; y < size; y++) {
+            Piece* piece = board[x][y];
+            if (piece != NULL) {
+                delete piece;
+            }
+        }
+    }
 }
 
 bool Board::hasPiece(const XY& xy) const {
@@ -111,7 +142,7 @@ bool Board::removePiece(const XY& xy) {
     if (x > max || y > max) return false;
 
     Piece* piece = this->board[x][y];
-    this->board[x][y] = 0;
+    this->board[x][y] = NULL;
 
     if (piece == NULL) {
         return false;
@@ -131,7 +162,7 @@ uint Board::promote() {
     for (uint x = 0; x < size; x++) {
         //First row
         Piece* piece = this->board[x][0];
-        if (piece != 0 && piece->getColor() == Color::BLACK && piece->getType() == PieceType::MAN) {
+        if (piece != NULL && piece->getColor() == Color::BLACK && piece->getType() == PieceType::MAN) {
             piece->promote();
             promoted++;
         }
@@ -163,6 +194,9 @@ bool Board::movePiece(const XY& xy, const XY& targetXY) {
     uint val = abs(xMovement) + abs(yMovement);
     Piece* targetPiece = this->board[targetX][targetY];
     Piece* piece = this->board[x][y];
+    if (piece == NULL) {
+        return false;
+    }
     //Man pieces can only advance one diagonal
     if (piece->getType() == PieceType::MAN && val != 2) {
         return false;
@@ -190,7 +224,7 @@ bool Board::movePiece(const XY& xy, const XY& targetXY) {
             }
         }
 
-        this->board[x][y] = 0;
+        this->board[x][y] = NULL;
         this->board[targetX][targetY] = piece;
         return true;
     } else if (targetPiece->getColor() == piece->getColor()) {
@@ -221,10 +255,139 @@ bool Board::movePiece(const XY& xy, const XY& targetXY) {
             //Kills the piece
             this->removePiece(targetXY);
             this->board[blankX][blankY] = piece;
-            this->board[x][y] = 0;
+            this->board[x][y] = NULL;
             return true;
         } else {
             return false;
         }
     }
 }
+
+vector<XY> Board::verifyAdjacentKills(XY xy) const {
+    Piece* piece = getPiece(xy);
+    vector<XY> positions;
+    if (piece == 0) {
+        return positions;
+    }
+
+    uint type = piece->getType();
+    uint color = piece->getColor();
+
+    XY pos;
+
+    //Man verification
+    if (type == PieceType::MAN) {
+        //Upper color
+        if (color == Color::WHITE) {
+            pos = xy.plus(1, 1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+            pos = xy.plus(-1, 1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+        } else {
+            pos = xy.plus(1, -1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+            pos = xy.plus(-1, -1);
+            if (verifyKill(xy, pos)) {
+                positions.push_back(pos);
+            }
+        }
+    }//King
+    else {
+        uint size = getSize();
+        //The shortest kill will have a movement length of 1
+        //The longest kill will have a movement length of size-2
+        for (uint i = 1; i < size - 1; i++) {
+            //Check all directions
+            for (uint direction = 0; direction < 4; direction++) {
+                switch (direction) {
+                        //(+1,+1)
+                    case 0:
+                        pos = xy.plus(i, i);
+                        break;
+                        //(+1,-1)
+                    case 1:
+                        pos = xy.plus(i, -i);
+                        break;
+                        //(-1,+1)
+                    case 2:
+                        pos = xy.plus(-i, i);
+                        break;
+                        //(-1,-1)
+                    case 3:
+                        pos = xy.plus(-i, -i);
+                        break;
+                }
+                if (pos > size - 1) continue;
+                if (verifyKill(xy, pos)) {
+                    positions.push_back(pos);
+                }
+            }
+        }
+    }
+    return positions;
+}
+
+bool Board::verifyKill(XY xy, XY targetXY) const {
+    uint max = size - 1;
+    uint x = xy.getX();
+    uint y = xy.getY();
+    uint targetX = targetXY.getX();
+    uint targetY = targetXY.getY();
+    if (x > max || y > max || targetX > max || targetY > max) {
+        return false;
+    }
+
+    Piece* piece = getPiece(xy);
+    Piece* targetPiece = getPiece(targetXY);
+    int xMovement = targetX - x;
+    int yMovement = targetY - y;
+    uint blankX = xMovement + (xMovement > 0 ? 1 : -1) + x;
+    uint blankY = yMovement + (yMovement > 0 ? 1 : -1) + y;
+    if (blankX > max || blankY > max) {
+        return false;
+    }
+    XY blank(blankX, blankY);
+    if (piece == NULL || targetPiece == NULL) {
+        return false;
+    }
+    if (piece->getColor() == targetPiece->getColor()) {
+        return false;
+    }
+    return !hasPiece(blank);
+}
+
+uint Board::verifyPossibleKills(uint playerColor, map<XY, vector<XY> >& possibleKills, vector<XY>& piecesXY) const {
+    uint possibleKillsCount = 0;
+
+    for (uint x = 0; x < size; x++) {
+        for (uint y = 0; y < size; y++) {
+            XY xy(x, y);
+            Piece* piece = getPiece(xy);
+            if (piece != NULL && piece->getColor() == playerColor) {
+                vector<XY> poss = verifyAdjacentKills(xy);
+                possibleKillsCount += poss.size();
+                possibleKills[xy] = poss;
+                if (poss.size() > 0) {
+                    piecesXY.push_back(xy);
+                }
+            }
+        }
+    }
+    
+    for (int i = 0; i < piecesXY.size(); i++) {
+        const XY& xy = piecesXY[i];
+        if (possibleKills[xy].size() == 0) {
+            possibleKills.erase(xy);
+        }
+    }
+    
+    return possibleKillsCount;
+}
+
+
